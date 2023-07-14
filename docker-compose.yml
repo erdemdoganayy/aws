@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: postgres
+    image: postgres
+    environment:
+      - POSTGRES_USER=youruser
+      - POSTGRES_PASSWORD=yourpassword
+      - POSTGRES_DB=yourdb
+
+    volumes:
+      - ./bus_app.csv:/docker-entrypoint-initdb.d/bus_app.csv
+      - ./bus_app.sql:/docker-entrypoint-initdb.d/bus_app.sql
+    ports:
+      - 5432:5432
+  web:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    depends_on:
+      - db
+    ports:
+      - 5000:5000
+    environment:
+      - DATABASE_URL=postgresql://youruser:yourpassword@db:5432/yourdb
+volumes:
+  dbdata:
